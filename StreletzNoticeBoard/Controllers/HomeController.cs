@@ -8,6 +8,9 @@ using StreletzNoticeBoard.Models;
 
 namespace StreletzNoticeBoard.Controllers
 {
+    /// <summary>
+    /// Контроллер главной страницы.
+    /// </summary>
     public class HomeController : Controller
     {
         public IActionResult Index()

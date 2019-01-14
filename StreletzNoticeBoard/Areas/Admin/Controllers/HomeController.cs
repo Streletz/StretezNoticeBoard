@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace StreletzNoticeBoard.Areas.Admin.Controllers
 {
+    /// <summary>
+    /// Контроллер дашборда админпанели.
+    /// </summary>
     [Area("Admin")]
     public class HomeController : Controller
     {

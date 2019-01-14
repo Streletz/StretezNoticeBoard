@@ -10,6 +10,9 @@ using DataAccess.Data.Models;
 
 namespace StreletzNoticeBoard.Areas.Admin.Controllers
 {
+    /// <summary>
+    /// Контроллер для работы с категориями из админпанели.
+    /// </summary>
     [Area("Admin")]
     public class CategoriesController : Controller
     {
