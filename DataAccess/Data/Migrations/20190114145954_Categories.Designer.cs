@@ -23,14 +23,15 @@ namespace DataAccess.Data.Migrations
 
             modelBuilder.Entity("DataAccess.Data.Models.Category", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("Id").ForSqlServerUseSequenceHiLo().
+                        ValueGeneratedOnAdd();
 
                     b.Property<string>("CategoryName")
                         .IsRequired();
 
                     b.ToTable("Category");
                 });
+            
 
 
         }

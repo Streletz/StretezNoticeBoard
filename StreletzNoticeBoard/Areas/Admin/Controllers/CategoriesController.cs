@@ -23,7 +23,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         // GET: Admin/Categories
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Categories.ToListAsync());
+            return View(await _context.Categories.OrderBy(x=>x.CategoryName).ToListAsync());
         }
 
         // GET: Admin/Categories/Details/5

@@ -11,7 +11,7 @@ namespace DataAccess.Data.Migrations
                 name: "Categories",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false,type:"INT IDENTITY(1,1)"),
                     CategoryName = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
