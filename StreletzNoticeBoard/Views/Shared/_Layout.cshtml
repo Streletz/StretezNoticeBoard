@@ -5,8 +5,12 @@
 
 @{
     var user = UserManager.GetUserAsync(User).Result;
-    IEnumerable<string> roles = UserManager.GetRolesAsync(user).Result;
-    bool isAdmin = roles.Contains("admin");
+    bool isAdmin = false;
+    if (user != null)
+    {
+        IEnumerable<string> roles = UserManager.GetRolesAsync(user).Result;
+        isAdmin = roles.Contains("admin");
+    }
 }
 
 <!DOCTYPE html>
