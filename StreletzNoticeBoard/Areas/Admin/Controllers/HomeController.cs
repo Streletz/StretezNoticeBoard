@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,9 +12,11 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
     /// Контроллер дашборда админпанели.
     /// </summary>
     [Area("Admin")]
+    //[Authorize(Roles = "admin")]
     public class HomeController : Controller
     {
         // GET: Home
+       // [Authorize(Roles = "admin")]
         public ActionResult Index()
         {
             return View();

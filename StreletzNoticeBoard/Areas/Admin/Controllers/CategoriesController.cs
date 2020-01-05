@@ -7,13 +7,14 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DataAccess.Data;
 using DataAccess.Data.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace StreletzNoticeBoard.Areas.Admin.Controllers
 {
     /// <summary>
     /// Контроллер для работы с категориями из админпанели.
     /// </summary>
-    [Area("Admin")]
+    
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;

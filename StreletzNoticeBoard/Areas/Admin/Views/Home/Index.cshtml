@@ -1,8 +1,17 @@
-﻿
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
 @{
     //Layout = null;
+
+
+
+    var user = UserManager.GetUserAsync(User).Result;
+    IEnumerable<string> roles = UserManager.GetRolesAsync(user).Result;
+    bool isAdmin = roles.Contains("admin");
+    int a = 1;
 }
 
 
-    <h1>Панель администрирования</h1>
+<h1>Панель администрирования</h1>
 

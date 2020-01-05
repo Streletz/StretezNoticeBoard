@@ -1,3 +1,14 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+@{
+    var user = UserManager.GetUserAsync(User).Result;
+    IEnumerable<string> roles = UserManager.GetRolesAsync(user).Result;
+    bool isAdmin = roles.Contains("admin");
+}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,6 +44,10 @@
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
                     <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
                     <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                    @if (SignInManager.IsSignedIn(User) && isAdmin)
+                    {
+                        <li><a asp-area="Admin" asp-controller="Home" asp-action="Index">Админпанель</a></li>
+                    }
                 </ul>
                 <partial name="_LoginPartial" />
             </div>
