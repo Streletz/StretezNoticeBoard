@@ -7,9 +7,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Data
 {
+    /// <summary>
+    /// Контекст БД.
+    /// </summary>
     public class ApplicationDbContext : IdentityDbContext
     {
+        /// <summary>
+        /// Категории объявлений.
+        /// </summary>
         public DbSet<Category> Categories { get; set; }
+        /// <summary>
+        /// Объявления.
+        /// </summary>
+        public DbSet<Notice> Notices { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
