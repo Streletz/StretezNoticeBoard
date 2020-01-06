@@ -1,0 +1,27 @@
+﻿@model DataAccess.Data.Models.Category
+
+@{
+    ViewData["Title"] = "Удаление категории";
+}
+
+<h2>Удаление</h2>
+
+<h3>Удалить эту категорию?</h3>
+<div>
+    <h4>Категория</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.CategoryName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CategoryName)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Удалить" class="btn btn-default" /> |
+        <a asp-action="Index">К списку категорий</a>
+    </form>
+</div>

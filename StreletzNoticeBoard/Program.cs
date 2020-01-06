@@ -15,9 +15,15 @@ namespace StreletzNoticeBoard
 {
     public class Program
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             var host = CreateWebHostBuilder(args).Build();
+            InitializeUsers(host);
+            host.Run();
+        }
+
+        private static async Task InitializeUsers(IWebHost host)
+        {
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
@@ -33,7 +39,6 @@ namespace StreletzNoticeBoard
                     logger.LogError(ex, "An error occurred while seeding the database.");
                 }
             }
-            host.Run();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>

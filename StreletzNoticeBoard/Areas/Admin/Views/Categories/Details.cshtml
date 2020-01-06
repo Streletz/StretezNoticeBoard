@@ -1,0 +1,25 @@
+﻿@model DataAccess.Data.Models.Category
+
+@{
+    ViewData["Title"] = "Категория";
+}
+
+<h2>Категория</h2>
+
+<div>
+    <h4>Сведения</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.CategoryName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CategoryName)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Редактировать</a> |
+    <a asp-action="Delete" asp-route-id="@Model.Id">Удалить</a> |
+    <a asp-action="Index">К списку категорий</a>
+</div>
