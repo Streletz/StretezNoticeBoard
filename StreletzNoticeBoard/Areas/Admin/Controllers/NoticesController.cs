@@ -99,17 +99,20 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var notice = await _context.Notices.FindAsync(id);
+            var notice = await _context.Notices.Include(x => x.Category).Include(x => x.Creator).FirstAsync(x => x.Id == id);
             if (notice == null)
             {
                 return NotFound();
             }
-            NoticeViewModel viewModel = new NoticeViewModel
-            {
-                Notice = notice,
-                Categories = _context.Categories.OrderBy(x => x.CategoryName),
-                Users = _context.Users.OrderBy(x => x.UserName)
-            };
+            NoticeViewModel viewModel = new NoticeViewModel();
+
+            viewModel.Notice = notice;
+
+            viewModel.Categories = _context.Categories.OrderBy(x => x.CategoryName);
+            viewModel.Users = _context.Users.OrderBy(x => x.UserName);
+            viewModel.CategoryId = notice.Category.Id;
+            viewModel.CreatorId = notice.Creator.Id;
+
             return View(viewModel);
         }
 
