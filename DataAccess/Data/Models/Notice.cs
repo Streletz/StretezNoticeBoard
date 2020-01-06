@@ -21,7 +21,7 @@ namespace DataAccess.Data.Models
         /// Тема (название).
         /// </summary>
         [Required]
-        [Display(Name = "Названия")]
+        [Display(Name = "Название")]
         public string Subject { get; set; }
         /// <summary>
         /// Текст объявления.
@@ -32,13 +32,13 @@ namespace DataAccess.Data.Models
         /// <summary>
         /// Категория.
         /// </summary>
-        [Required]
+       // [Required]
         [Display(Name = "Категория")]
         public Category Category { get; set; }
         /// <summary>
         /// Пользователь, создавший объявление.
         /// </summary>
-        [Required]
+       // [Required]
         [Display(Name = "Разместил")]
         public IdentityUser Creator { get; set; }
         /// <summary>
@@ -46,12 +46,12 @@ namespace DataAccess.Data.Models
         /// </summary>
         [Required]
         [Display(Name = "Создано")]
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         /// <summary>
         /// Объявление активно (т.е. отображается в публичном доступе).
         /// </summary>
         [Required]
         [Display(Name = "Активно")]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 }

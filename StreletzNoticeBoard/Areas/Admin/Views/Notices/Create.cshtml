@@ -1,0 +1,61 @@
+﻿@model StreletzNoticeBoard.Areas.Admin.Components.NoticeViewModel
+
+@{
+    ViewData["Title"] = "Новое объявление";  
+}
+
+<h2>Создание</h2>
+
+<h4>Объявление</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Notice.Subject" class="control-label"></label>
+                <input asp-for="Notice.Subject" class="form-control" />
+                <span asp-validation-for="Notice.Subject" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Notice.Description" class="control-label"></label>
+                <textarea asp-for="Notice.Description" class="form-control"></textarea>
+                <span asp-validation-for="Notice.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CategoryId" class="control-label"></label>
+                @Html.DropDownList("CategoryId", Model.Categories.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.CategoryName }))
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreatorId" class="control-label"></label>
+                @Html.DropDownList("CreatorId", Model.Users.Select(x => new SelectListItem() { Value = x.Id, Text = x.UserName }))
+                <span asp-validation-for="CreatorId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Notice.CreatedAt" class="control-label"></label>
+                <input type="date" asp-for="Notice.CreatedAt" class="form-control" />
+                <span asp-validation-for="Notice.CreatedAt" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" value="true" asp-for="Notice.IsActive" /> @Html.DisplayNameFor(model => model.Notice.IsActive)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Сохранить" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">К списку объявлений</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
