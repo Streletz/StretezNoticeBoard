@@ -1,0 +1,39 @@
+﻿@model IEnumerable<StreletzNoticeBoard.Areas.Admin.Components.UserViewModel>
+@{
+    ViewData["Title"] = "Пользователи";
+}
+
+<h2>Пользователи</h2>
+
+<p>
+    <a asp-action="Create">Новый пользователь</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Логин
+            </th>
+            <th>Роль</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.UserName)</a>
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Role)</a>
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Редактировать</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Удалить</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
