@@ -28,6 +28,22 @@ namespace StreletzNoticeBoard.Areas.Admin.Components
         /// Роль.
         /// </summary>
         public string Role { get; set; }
+
+        public string RoleName
+        {
+            get
+            {
+                string result;
+                switch (Role)
+                {
+                    case "admin": result = "Администратор"; break;
+                    case "buyer": result = "Покупатель"; break;
+                    case "seller": result = "Продавец"; break;
+                    default: result = "Не установлена";break;
+                }
+                return result;
+            }
+        }
         /// <summary>
         /// Роли для списков в UI.
         /// </summary>
