@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,16 +20,18 @@ namespace StreletzNoticeBoard.Areas.Admin.Components
         /// <summary>
         /// Логин.
         /// </summary>
+        [Display(Name = "Логин")]
         public string UserName { get; set; }
         /// <summary>
         /// Пароль (используется только при создании и редактировании).
         /// </summary>
+        [Display(Name = "Пароль")]
         public string Password { get; set; }
         /// <summary>
         /// Роль.
         /// </summary>
         public string Role { get; set; }
-
+        [Display(Name = "Роль")]
         public string RoleName
         {
             get
@@ -39,7 +42,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Components
                     case "admin": result = "Администратор"; break;
                     case "buyer": result = "Покупатель"; break;
                     case "seller": result = "Продавец"; break;
-                    default: result = "Не установлена";break;
+                    default: result = "Не установлена"; break;
                 }
                 return result;
             }

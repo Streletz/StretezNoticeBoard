@@ -1,7 +1,43 @@
-﻿
+﻿@using StreletzNoticeBoard.Areas.Admin.Components
+@model StreletzNoticeBoard.Areas.Admin.Components.UserViewModel
 @{
+   // using StreletzNoticeBoard.Areas.Admin.Components.IdentityRoleExtensions
     ViewData["Title"] = "Создание";
 }
 
 <h2>Создание</h2>
 
+<h4>Новый пользователь</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="UserName" class="control-label"></label>
+                <input asp-for="UserName" class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RoleName" class="control-label"></label>
+                @Html.DropDownList("Role", Model.Roles.Select(x => new SelectListItem() { Value = x.Name, Text = x.TextName(), Selected = (x.Id == Model.Role) }), new { id = 2 })                
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Сохранить" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">К списку категорий</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

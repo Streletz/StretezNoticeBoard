@@ -15,12 +15,15 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
     public class UserController : Controller
     {
         private readonly ApplicationDbContext _context;
-        UserManager<IdentityUser> _userManager;
-       
-        public UserController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        private UserManager<IdentityUser> _userManager;
+        private RoleManager<IdentityRole> _roleManager;
+
+
+        public UserController(ApplicationDbContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
         // GET: User
         public ActionResult Index()
@@ -38,26 +41,47 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         }
 
         // GET: User/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(string id)
         {
+            IdentityUser rawUser = _context.Users.First(x => x.Id == id);
+            UserViewModel model = new UserViewModel
+            {
+                Id = rawUser.Id,
+                UserName = rawUser.UserName,
+                Role = _userManager.GetRolesAsync(rawUser).Result.First(),
+                Roles = _context.Roles.OrderBy(x => x.Name)
+            };
             return View();
         }
 
         // GET: User/Create
         public ActionResult Create()
         {
-            return View();
+            UserViewModel model = new UserViewModel
+            {
+                Roles = _context.Roles.OrderBy(x => x.Name)
+            };
+            return View(model);
         }
 
         // POST: User/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Create(UserViewModel viewModel)
         {
             try
             {
                 // TODO: Add insert logic here
-
+                IdentityUser user = new IdentityUser
+                {
+                    Email = viewModel.UserName,
+                    UserName = viewModel.UserName
+                };
+                IdentityResult result = await _userManager.CreateAsync(user, viewModel.Password).ConfigureAwait(false);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, viewModel.Role).ConfigureAwait(false);
+                }                
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -67,8 +91,16 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         }
 
         // GET: User/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(string id)
         {
+            IdentityUser rawUser = _context.Users.First(x => x.Id == id);
+            UserViewModel model = new UserViewModel
+            {
+                Id = rawUser.Id,
+                UserName = rawUser.UserName,
+                Role = _userManager.GetRolesAsync(rawUser).Result.First(),
+                Roles = _context.Roles.OrderBy(x => x.Name)
+            };
             return View();
         }
 
