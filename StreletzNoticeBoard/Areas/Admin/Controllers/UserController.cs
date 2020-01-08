@@ -51,7 +51,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 Role = _userManager.GetRolesAsync(rawUser).Result.First(),
                 Roles = _context.Roles.OrderBy(x => x.Name)
             };
-            return View();
+            return View(model);
         }
 
         // GET: User/Create
@@ -107,7 +107,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         // POST: User/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, UserViewModel viewModel)
         {
             try
             {
