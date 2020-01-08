@@ -129,20 +129,28 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         }
 
         // GET: User/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult Delete(string id)
         {
-            return View();
+            IdentityUser rawUser = _context.Users.First(x => x.Id == id);
+            UserViewModel model = new UserViewModel
+            {
+                Id = rawUser.Id,
+                UserName = rawUser.UserName,
+                Role = _userManager.GetRolesAsync(rawUser).Result.First(),
+                Roles = _context.Roles.OrderBy(x => x.Name)
+            };
+            return View(model);
         }
 
         // POST: User/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(string id, UserViewModel viewModel)
         {
             try
             {
-                // TODO: Add delete logic here
-
+                IdentityUser rawUser = _context.Users.First(x => x.Id == id);
+                _userManager.DeleteAsync(rawUser);
                 return RedirectToAction(nameof(Index));
             }
             catch
