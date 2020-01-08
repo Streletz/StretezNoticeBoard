@@ -81,7 +81,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, viewModel.Role).ConfigureAwait(false);
-                }                
+                }
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -101,18 +101,25 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 Role = _userManager.GetRolesAsync(rawUser).Result.First(),
                 Roles = _context.Roles.OrderBy(x => x.Name)
             };
-            return View();
+            return View(model);
         }
 
         // POST: User/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, UserViewModel viewModel)
+        public async Task<ActionResult> Edit(string id, UserViewModel viewModel)
         {
             try
             {
                 // TODO: Add update logic here
-
+                IdentityUser rawUser = _context.Users.First(x => x.Id == id);
+                rawUser.UserName = viewModel.UserName;
+                rawUser.Email = viewModel.UserName;
+                IdentityResult result = await _userManager.UpdateAsync(rawUser).ConfigureAwait(false);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(rawUser, viewModel.Role).ConfigureAwait(false);
+                }
                 return RedirectToAction(nameof(Index));
             }
             catch
