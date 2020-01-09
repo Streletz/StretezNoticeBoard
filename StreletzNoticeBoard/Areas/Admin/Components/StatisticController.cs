@@ -2,48 +2,46 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DataAccess.Data;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using StreletzNoticeBoard.Areas.Admin.Models;
 
-namespace StreletzNoticeBoard.Areas.Admin.Controllers
+namespace StreletzNoticeBoard.Areas.Admin.Components
 {
-
-
-    /// <summary>
-    /// Контроллер дашборда админпанели.
-    /// </summary>
-    [Area("Admin")]
-    //[Authorize(Roles = "admin")]
-    public class HomeController : Controller
+    public class StatisticController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        public HomeController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-        // GET: Home
-        // [Authorize(Roles = "admin")]
+        // GET: Statistic
         public ActionResult Index()
         {
             return View();
         }
 
-        // GET: Home/Details/5
+        public ActionResult AdminPanelWidget()
+        {
+            Statistic model = new Statistic
+            {
+                AllUsersCount = 0,
+                Admins = 0,
+                Buyers = 0,
+                Sellers = 0,
+                Notices = 0
+            };
+            return PartialView("AdminPanelWidget", model);
+        }
+
+        // GET: Statistic/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: Home/Create
+        // GET: Statistic/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Home/Create
+        // POST: Statistic/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(IFormCollection collection)
@@ -60,13 +58,13 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             }
         }
 
-        // GET: Home/Edit/5
+        // GET: Statistic/Edit/5
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: Home/Edit/5
+        // POST: Statistic/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
@@ -83,13 +81,13 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             }
         }
 
-        // GET: Home/Delete/5
+        // GET: Statistic/Delete/5
         public ActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: Home/Delete/5
+        // POST: Statistic/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)
@@ -104,18 +102,6 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             {
                 return View();
             }
-        }
-        public ActionResult AdminPanelWidget()
-        {
-            Statistic model = new Statistic
-            {
-                AllUsersCount = _context.Users.Count(),
-                Admins = 0,
-                Buyers = 0,
-                Sellers = 0,
-                Notices = 0
-            };
-            return PartialView("AdminPanelWidget", model);
         }
     }
 }

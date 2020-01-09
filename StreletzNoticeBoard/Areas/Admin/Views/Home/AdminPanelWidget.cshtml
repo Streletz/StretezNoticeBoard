@@ -1,0 +1,45 @@
+﻿@model StreletzNoticeBoard.Areas.Admin.Models.Statistic
+    <div>
+        <h4>Сведения</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Admins)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Admins)
+            </dd>
+        </dl>
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Sellers)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Sellers)
+            </dd>
+        </dl>
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Buyers)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Buyers)
+            </dd>
+        </dl>
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.AllUsersCount)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.AllUsersCount)
+            </dd>
+        </dl>
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Notices)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Notices)
+            </dd>
+        </dl>
+    </div>
