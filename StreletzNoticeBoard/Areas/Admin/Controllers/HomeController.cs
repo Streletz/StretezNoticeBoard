@@ -104,18 +104,6 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             {
                 return View();
             }
-        }
-        public ActionResult AdminPanelWidget()
-        {
-            Statistic model = new Statistic
-            {
-                AllUsersCount = _context.Users.Count(),
-                Admins = 0,
-                Buyers = 0,
-                Sellers = 0,
-                Notices = 0
-            };
-            return PartialView("AdminPanelWidget", model);
-        }
+        }        
     }
 }
