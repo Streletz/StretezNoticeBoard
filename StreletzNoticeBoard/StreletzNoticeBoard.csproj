@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
     <UserSecretsId>aspnet-StreletzNoticeBoard-BC46972C-30BD-478C-8707-19067186BE32</UserSecretsId>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
