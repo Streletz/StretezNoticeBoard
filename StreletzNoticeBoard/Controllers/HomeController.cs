@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using DataAccess.Data;
+using DataAccess.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using StreletzNoticeBoard.Models;
 
@@ -13,9 +15,16 @@ namespace StreletzNoticeBoard.Controllers
     /// </summary>
     public class HomeController : Controller
     {
+        private ApplicationDbContext _context;
+
+        public HomeController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
         public IActionResult Index()
         {
-            return View();
+            IEnumerable<Notice> noticesList = _context.Notices.Where(x => x.IsActive).OrderByDescending(x => x.CreatedAt);
+            return View(noticesList);
         }
 
         public IActionResult About()
