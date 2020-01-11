@@ -82,6 +82,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                     notice.Id = Guid.NewGuid();
                     notice.Category = _context.Categories.First(x => x.Id == viewModel.CategoryId);
                     notice.Creator = _context.Users.First(x => x.Id == viewModel.CreatorId);
+                    notice.CreatedAt = DateTime.Now;
                     _context.Add(notice);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
