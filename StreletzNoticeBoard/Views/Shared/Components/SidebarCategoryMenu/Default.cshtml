@@ -1,0 +1,9 @@
+﻿@model IEnumerable<DataAccess.Data.Models.Category>
+
+<h2>Категории</h2>
+<ul>
+    @foreach (var item in Model)
+    {
+        <li>@item.CategoryName</li>
+    }
+</ul>

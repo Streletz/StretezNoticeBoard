@@ -19,8 +19,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Components.ViewComponents
         {
             _context = context;
         }
-        public async Task<IViewComponentResult> InvokeAsync(
-        int maxPriority, bool isDone)
+        public async Task<IViewComponentResult> InvokeAsync(int maxPriority, bool isDone)
         {
             Statistic model = new Statistic
             {
