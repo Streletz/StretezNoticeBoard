@@ -29,7 +29,7 @@
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CreatorId" class="control-label"></label>
+                <label asp-for="Notice.Creator" class="control-label"></label>
                 @Html.DropDownList("CreatorId", Model.Users.Select(x => new SelectListItem() { Value = x.Id, Text = x.UserName, Selected = (x.Id == Model.CreatorId) }))
                 <span asp-validation-for="CreatorId" class="text-danger"></span>
             </div>

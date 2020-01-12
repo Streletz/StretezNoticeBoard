@@ -13,7 +13,7 @@
         {
             <div class="row">
                 <div class="col-md-12">
-                    <h4>@item.Subject</h4>
+                    <h4><a asp-controller="Notices" asp-action="Details" asp-route-id="@item.Id">@item.Subject</a></h4>
                     <p>@item.Category.CategoryName</p>
                     <p>@item.CreatedAt.ToString("dd.MM.yyyy HH:mm")</p>
                 </div>
