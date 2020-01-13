@@ -7,16 +7,20 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DataAccess.Data;
 using DataAccess.Data.Models;
+using StreletzNoticeBoard.Components.ViewModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace StreletzNoticeBoard.Controllers
 {
     public class NoticesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private UserManager<IdentityUser> _userManager;
 
-        public NoticesController(ApplicationDbContext context)
+        public NoticesController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Notices
@@ -33,7 +37,7 @@ namespace StreletzNoticeBoard.Controllers
                 return NotFound();
             }
 
-            var notice = await _context.Notices.Include(x => x.Category).Include(x=>x.Creator)
+            var notice = await _context.Notices.Include(x => x.Category).Include(x => x.Creator)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (notice == null)
             {
@@ -43,28 +47,53 @@ namespace StreletzNoticeBoard.Controllers
             return View(notice);
         }
 
-        // GET: Notices/Create
-        public IActionResult Create()
+        // GET: Admin/Notices/Create
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
+            NoticeViewModel viewModel = new NoticeViewModel
+            {
+                Notice = new Notice
+                {
+                    Category = new Category(),
+                    Creator = _context.Users.First(x => x.Id == user.Id)
+                },
+                Categories = _context.Categories.OrderBy(x => x.CategoryName),
+                Users = _context.Users.OrderBy(x => x.UserName)
+            };
+            return View(viewModel);
         }
 
-        // POST: Notices/Create
+        // POST: Admin/Notices/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Subject,Description,CreatedAt,IsActive")] Notice notice)
+        public async Task<IActionResult> Create(/*[Bind("Notice.Id,Notice.Subject,Notice.Description,Notice.CreatedAt,Notice.IsActive")]*/ NoticeViewModel viewModel)
         {
+            NoticeViewModel noticeViewModel = new NoticeViewModel
+            {
+                Categories = _context.Categories.OrderBy(x => x.CategoryName),
+                Users = _context.Users.OrderBy(x => x.UserName)
+            };
             if (ModelState.IsValid)
             {
-                notice.Id = Guid.NewGuid();
-                _context.Add(notice);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (viewModel.Notice != null)
+                {
+                    Notice notice = viewModel.Notice;
+                    notice.Id = Guid.NewGuid();
+                    notice.Category = _context.Categories.First(x => x.Id == viewModel.CategoryId);
+                    //notice.Creator = _context.Users.First(x => x.Id == viewModel.CreatorId);
+                    notice.CreatedAt = DateTime.Now;
+                    _context.Add(notice);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Index","Home");
+                }
             }
-            return View(notice);
+
+            return View(noticeViewModel);
         }
+
 
         // GET: Notices/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
