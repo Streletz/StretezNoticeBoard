@@ -1,10 +1,24 @@
 ﻿@model IEnumerable<DataAccess.Data.Models.Notice>
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
 @{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="row">
     <div class="col-md-3">
+        <div class="row add-bar">
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <a class="btn btn-success" asp-controller="Notices" asp-action="Create">Разместить объявление</a>
+            }
+            else
+            {
+                <a class="btn btn-success" asp-area="Identity" asp-page="/Account/Login">Разместить объявление</a>
+            }
+        </div>
         @await Component.InvokeAsync("SidebarCategoryMenu", new { maxPriority = 2, isDone = false })
     </div>
     <div class="col-md-9">
@@ -20,3 +34,4 @@
             </div>
         }
     </div>
+</div>

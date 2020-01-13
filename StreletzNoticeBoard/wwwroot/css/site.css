@@ -35,3 +35,7 @@ body {
         display: none;
     }
 }
+
+.add-bar{
+    margin-top:15px !important;
+}
