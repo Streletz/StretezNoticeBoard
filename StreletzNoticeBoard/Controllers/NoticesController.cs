@@ -38,7 +38,7 @@ namespace StreletzNoticeBoard.Controllers
             }
 
             var notice = await _context.Notices.Include(x => x.Category).Include(x => x.Creator)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id).ConfigureAwait(true);
             if (notice == null)
             {
                 return NotFound();
@@ -80,14 +80,15 @@ namespace StreletzNoticeBoard.Controllers
             {
                 if (viewModel.Notice != null)
                 {
+                    var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
                     Notice notice = viewModel.Notice;
                     notice.Id = Guid.NewGuid();
                     notice.Category = _context.Categories.First(x => x.Id == viewModel.CategoryId);
-                    //notice.Creator = _context.Users.First(x => x.Id == viewModel.CreatorId);
+                    notice.Creator = _context.Users.First(x => x.Id == user.Id);
                     notice.CreatedAt = DateTime.Now;
                     _context.Add(notice);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction("Index","Home");
+                    return RedirectToAction("Index", "Home");
                 }
             }
 
@@ -103,12 +104,21 @@ namespace StreletzNoticeBoard.Controllers
                 return NotFound();
             }
 
-            var notice = await _context.Notices.FindAsync(id);
+            var notice = await _context.Notices.Include(x => x.Category).Include(x => x.Creator).FirstAsync(x => x.Id == id).ConfigureAwait(true);
             if (notice == null)
             {
                 return NotFound();
             }
-            return View(notice);
+            NoticeViewModel viewModel = new NoticeViewModel();
+
+            viewModel.Notice = notice;
+
+            viewModel.Categories = _context.Categories.OrderBy(x => x.CategoryName);
+            viewModel.Users = _context.Users.OrderBy(x => x.UserName);
+            viewModel.CategoryId = notice.Category.Id;
+            viewModel.CreatorId = notice.Creator.Id;
+
+            return View(viewModel);
         }
 
         // POST: Notices/Edit/5
@@ -116,23 +126,22 @@ namespace StreletzNoticeBoard.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Subject,Description,CreatedAt,IsActive")] Notice notice)
+        public async Task<IActionResult> Edit(Guid id, NoticeViewModel viewModel)
         {
-            if (id != notice.Id)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
+                    IdentityUser user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
+                    Notice notice = viewModel.Notice;
+                    notice.Category = _context.Categories.First(x => x.Id == viewModel.CategoryId);
+                    notice.Creator = _context.Users.First(x => x.Id == user.Id);
                     _context.Update(notice);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!NoticeExists(notice.Id))
+                    if (!NoticeExists(viewModel.Notice.Id))
                     {
                         return NotFound();
                     }
@@ -141,9 +150,15 @@ namespace StreletzNoticeBoard.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Home");
             }
-            return View(notice);
+            NoticeViewModel viewModelClear = new NoticeViewModel
+            {
+                Notice = new Notice(),
+                Categories = _context.Categories.OrderBy(x => x.CategoryName),
+                Users = _context.Users.OrderBy(x => x.UserName)
+            };
+            return View(viewModelClear);
         }
 
         // GET: Notices/Delete/5
