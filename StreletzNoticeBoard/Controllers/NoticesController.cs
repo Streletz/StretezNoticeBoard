@@ -26,7 +26,8 @@ namespace StreletzNoticeBoard.Controllers
         // GET: Notices
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Notices.ToListAsync());
+            var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
+            return View(await _context.Notices.Include(x=>x.Category).Where(x=>x.Creator.Id==user.Id).ToListAsync().ConfigureAwait(false));
         }
 
         // GET: Notices/Details/5
