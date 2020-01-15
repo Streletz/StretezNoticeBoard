@@ -36,7 +36,7 @@ namespace StreletzNoticeBoard.Controllers
 
         public IActionResult Contact()
         {
-            ViewData["Message"] = "Your contact page.";
+            ViewData["Message"] = "Вопросы, замечания и предложения просьба направлять по следующему адресу.";
 
             return View();
         }
