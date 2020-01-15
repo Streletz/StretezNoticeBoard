@@ -161,34 +161,6 @@ namespace StreletzNoticeBoard.Controllers
             return View(viewModelClear);
         }
 
-        // GET: Notices/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var notice = await _context.Notices
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (notice == null)
-            {
-                return NotFound();
-            }
-
-            return View(notice);
-        }
-
-        // POST: Notices/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            var notice = await _context.Notices.FindAsync(id);
-            _context.Notices.Remove(notice);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
 
         private bool NoticeExists(Guid id)
         {

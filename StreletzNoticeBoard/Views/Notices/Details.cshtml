@@ -44,7 +44,7 @@
 <div>
     @if ((user.Id == Model.Creator.Id) && (!isAdmin))
     {
-        <a asp-action="Edit" asp-route-id="@Model.Id">Редактировать</a>
+        <a asp-action="Edit" asp-route-id="@Model.Id">Редактировать</a>    
     }
     @if (isAdmin)
     {
