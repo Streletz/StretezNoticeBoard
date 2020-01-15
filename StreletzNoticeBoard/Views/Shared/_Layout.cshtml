@@ -49,8 +49,7 @@
                     {
                         <li><a asp-area="" asp-controller="Notices" asp-action="Index">Мои объявления</a></li>
                     }
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>                    
                     @if (SignInManager.IsSignedIn(User) && isAdmin)
                     {
                         <li><a asp-area="Admin" asp-controller="Home" asp-action="Index">Админпанель</a></li>
@@ -67,7 +66,14 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2019 - StreletzNoticeBoard</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2019 - StreletzNoticeBoard</p>
+                </div>
+                <div class="col-md-6">
+                    <a asp-area="" asp-controller="Home" asp-action="Contact">Обратная связь</a>
+                </div>
+            </div>
         </footer>
     </div>
 
