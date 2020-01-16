@@ -1,0 +1,50 @@
+﻿@model IEnumerable<DataAccess.Data.Models.Notice>
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="row add-bar">
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <a class="btn btn-success" asp-controller="Notices" asp-action="Create">Разместить объявление</a>
+            }
+            else
+            {
+                <a class="btn btn-success" asp-area="Identity" asp-page="/Account/Login">Разместить объявление</a>
+            }
+        </div>
+        @await Component.InvokeAsync("SidebarCategoryMenu", new { maxPriority = 2, isDone = false })
+    </div>
+    <div class="col-md-9">
+        <h2>Объявления</h2>
+        @foreach (var item in Model)
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    <h4><a asp-controller="Notices" asp-action="Details" asp-route-id="@item.Id">@item.Subject</a></h4>
+                    <p>@item.Category.CategoryName</p>
+                    <p>@item.CreatedAt.ToString("dd.MM.yyyy HH:mm")</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        @if ((int)ViewData["PageCount"] > 1)
+        {
+            <a asp-action="Index" asp-all-route-data='new Dictionary<string, string> { { "page", "1"} }'>Первая</a>
+            @for (var i = 1; i <= (int)ViewData["PageCount"]; i++)
+            {
+                <a asp-action="Index" asp-all-route-data='new Dictionary<string, string> { { "page", i.ToString()} }'>@i.ToString()</a>
+            }
+            <a asp-action="Index" asp-all-route-data='new Dictionary<string, string> { { "page", ViewData["PageCount"].ToString()} }'>Последняя</a>
+        }
+    </div>
+</div>
