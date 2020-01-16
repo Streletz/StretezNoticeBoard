@@ -24,10 +24,22 @@ namespace StreletzNoticeBoard.Controllers
         }
 
         // GET: Notices
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
-            return View(await _context.Notices.Include(x=>x.Category).Where(x=>x.Creator.Id==user.Id).ToListAsync().ConfigureAwait(false));
+            int noticesCount = _context.Notices.Where(x => x.Creator.Id == user.Id).Count();
+            if (page < 1)
+            {
+                IEnumerable<Notice> noticesList = await _context.Notices.Include(x => x.Category)
+                    .Where(x => x.Creator.Id == user.Id).ToListAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                IEnumerable<Notice> noticesList = await _context.Notices.Include(x => x.Category)
+                    .Where(x => x.Creator.Id == user.Id).Skip((page - 1) * 20).Take(20).ToListAsync().ConfigureAwait(false);
+            }
+            ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
+            return View();
         }
 
         // GET: Notices/Details/5
