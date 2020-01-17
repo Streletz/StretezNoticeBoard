@@ -28,18 +28,19 @@ namespace StreletzNoticeBoard.Controllers
         {
             var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
             int noticesCount = _context.Notices.Where(x => x.Creator.Id == user.Id).Count();
+            IEnumerable<Notice> noticesList;
             if (page < 1)
             {
-                IEnumerable<Notice> noticesList = await _context.Notices.Include(x => x.Category)
+                noticesList = await _context.Notices.Include(x => x.Category)
                     .Where(x => x.Creator.Id == user.Id).ToListAsync().ConfigureAwait(false);
             }
             else
             {
-                IEnumerable<Notice> noticesList = await _context.Notices.Include(x => x.Category)
+                noticesList = await _context.Notices.Include(x => x.Category)
                     .Where(x => x.Creator.Id == user.Id).Skip((page - 1) * 20).Take(20).ToListAsync().ConfigureAwait(false);
             }
             ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
-            return View();
+            return View(noticesList);
         }
 
         // GET: Notices/Details/5
@@ -180,22 +181,33 @@ namespace StreletzNoticeBoard.Controllers
             return _context.Notices.Any(e => e.Id == id);
         }
 
-        public async Task<IActionResult> Search(int page = 1)
+        public async Task<IActionResult> Search(string search, int page = 1)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
-            int noticesCount = _context.Notices.Where(x => x.Creator.Id == user.Id).Count();
+            //int noticesCount = _context.Notices.Where(x => x.Creator.Id == user.Id).Count();
+            IEnumerable<Notice> noticesList;
             if (page < 1)
             {
-                IEnumerable<Notice> noticesList = await _context.Notices.Include(x => x.Category)
-                    .Where(x => x.Creator.Id == user.Id).ToListAsync().ConfigureAwait(false);
+                noticesList = await _context.Notices.Include(x => x.Category)
+                    .Where(x => (x.Creator.Id == user.Id) &&
+                    (
+                    x.Subject.ToUpper().Contains(search)
+                    || x.Description.ToUpper().Contains(search)
+                    )).ToListAsync().ConfigureAwait(false);
             }
             else
             {
-                IEnumerable<Notice> noticesList = await _context.Notices.Include(x => x.Category)
-                    .Where(x => x.Creator.Id == user.Id).Skip((page - 1) * 20).Take(20).ToListAsync().ConfigureAwait(false);
+                noticesList = await _context.Notices.Include(x => x.Category)
+                    .Where(x => (x.Creator.Id == user.Id) &&
+                    (
+                    x.Subject.ToUpper().Contains(search)
+                    || x.Description.ToUpper().Contains(search)
+                    )).Skip((page - 1) * 20).Take(20).ToListAsync().ConfigureAwait(false);
             }
+            int noticesCount = noticesList.Count();
             ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
-            return View();
+            ViewData["Search"] = search;
+            return View(noticesList);
         }
     }
 }
