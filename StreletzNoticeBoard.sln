@@ -1,14 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.271
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreletzNoticeBoard", "StreletzNoticeBoard\StreletzNoticeBoard.csproj", "{53B210FE-7083-45CA-8C58-9C3C5882965A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreletzNoticeBoard", "StreletzNoticeBoard\StreletzNoticeBoard.csproj", "{53B210FE-7083-45CA-8C58-9C3C5882965A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{673F3634-E7E8-4523-A823-1FAA701AD118} = {673F3634-E7E8-4523-A823-1FAA701AD118}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{673F3634-E7E8-4523-A823-1FAA701AD118}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{673F3634-E7E8-4523-A823-1FAA701AD118}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B0E0740A-AB75-4ECA-9FFB-CC05EA0924B1}"
+	ProjectSection(SolutionItems) = preProject
+		README.MD = README.MD
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
