@@ -4,7 +4,7 @@
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Поиск";
 }
 
 <div class="row">
@@ -19,10 +19,21 @@
                 <a class="btn btn-success" asp-area="Identity" asp-page="/Account/Login">Разместить объявление</a>
             }
         </div>
+        <div class="row add-bar">
+            <h2>Поиск</h2>
+            <form asp-action="Search">
+                <div class="form-group">
+                    <input name="search" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Поиск" class="btn btn-default" />
+                </div>
+            </form>
+        </div>
         @await Component.InvokeAsync("SidebarCategoryMenu", new { maxPriority = 2, isDone = false })
     </div>
     <div class="col-md-9">
-        <h2>Объявления</h2>
+        <h2>Результаты поиска по запросу: @ViewData["Search"]</h2>
         @foreach (var item in Model)
         {
             <div class="row">

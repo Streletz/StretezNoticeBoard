@@ -62,19 +62,39 @@ namespace StreletzNoticeBoard.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public IActionResult Search(int page = 1)
+        public IActionResult Search(string search, int page = 1)
         {
             IEnumerable<Notice> noticesList;
-            int noticesCount = _context.Notices.Where(x => x.IsActive).Count();
+            //int noticesCount = _context.Notices.Where(x => x.IsActive).Count();
             if (page < 1)
             {
-                noticesList = _context.Notices.Where(x => x.IsActive).OrderByDescending(x => x.CreatedAt);
+                noticesList = _context.Notices
+                    .Where(x =>
+                    x.IsActive
+                    &&
+                    (
+                    x.Subject.ToUpper().Contains(search)
+                    || x.Description.ToUpper().Contains(search)
+                    )
+                    )
+                    .OrderByDescending(x => x.CreatedAt);
             }
             else
             {
-                noticesList = _context.Notices.Where(x => x.IsActive).Skip((page - 1) * 20).Take(20).OrderByDescending(x => x.CreatedAt);
+                noticesList = _context.Notices
+                    .Where(x =>
+                    x.IsActive
+                    &&
+                    (
+                    x.Subject.ToUpper().Contains(search)
+                    || x.Description.ToUpper().Contains(search)
+                    )
+                    )
+                    .Skip((page - 1) * 20).Take(20).OrderByDescending(x => x.CreatedAt);
             }
+            int noticesCount = noticesList.Count();
             ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
+            ViewData["Search"] = search;
             return View(noticesList);
         }
     }
