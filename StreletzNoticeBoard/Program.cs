@@ -31,7 +31,7 @@ namespace StreletzNoticeBoard
                 {
                     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
                     var rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                    await RoleInitializer.InitializeAsync(userManager, rolesManager);
+                    await UserInitializer.InitializeAsync(userManager, rolesManager);
                 }
                 catch (Exception ex)
                 {
