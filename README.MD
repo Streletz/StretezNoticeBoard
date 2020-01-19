@@ -1,7 +1,1 @@
-# StreletzNoticeBoard
-
-Simple Bulletin Board based on .NET Core.
-
-## Technology stack
-
-## Deployment
+﻿﻿# StreletzNoticeBoardSimple Bulletin Board based on .NET Core.## Technology stack- ASP.NET Core MVC;- Entity FrameWork Core.## DeploymentCurrently, this software is only available as source code. You can configure the build and deployment yourself.
