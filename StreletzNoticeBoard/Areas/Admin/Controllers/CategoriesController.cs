@@ -21,9 +21,22 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         }
 
         // GET: Admin/Categories
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _context.Categories.OrderBy(x=>x.CategoryName).ToListAsync());
+            int noticesCount = _context.Notices.Count();
+            ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
+            IEnumerable<Category> categoryList;
+            if (page < 1)
+            {
+                categoryList = await _context.Categories.OrderBy(x => x.CategoryName).ToListAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                categoryList = await _context.Categories
+                    .Skip((page - 1) * 20).Take(20)
+                    .OrderBy(x => x.CategoryName).ToListAsync().ConfigureAwait(false);
+            }
+            return View(categoryList);
         }
 
         // GET: Admin/Categories/Details/5
@@ -149,6 +162,26 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         private bool CategoryExists(int id)
         {
             return _context.Categories.Any(e => e.Id == id);
+        }
+        public async Task<IActionResult> Search(string search, int page = 1)
+        {
+            IEnumerable<Category> categoryList;
+            if (page < 1)
+            {
+                categoryList = await _context.Categories
+                    .OrderBy(x => x.CategoryName).ToListAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                categoryList = await _context.Categories
+                    .Where(x => x.CategoryName.Contains(search))
+                    .Skip((page - 1) * 20).Take(20)
+                    .OrderBy(x => x.CategoryName).ToListAsync().ConfigureAwait(false);
+            }
+            int noticesCount = categoryList.Count();
+            ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
+            ViewData["Search"] = search;
+            return View(categoryList);
         }
     }
 }
