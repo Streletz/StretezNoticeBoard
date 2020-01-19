@@ -23,9 +23,22 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         }
 
         // GET: Admin/Notices
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _context.Notices.OrderBy(x => x.CreatedAt).ToListAsync());
+            int noticesCount = _context.Notices.Count();
+            ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
+            IEnumerable<Notice> noticeList;
+            if (page < 1)
+            {
+                noticeList = await _context.Notices.Include(x => x.Category).OrderBy(x => x.CreatedAt).ToListAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                noticeList = await _context.Notices
+                    .Skip((page - 1) * 20).Take(20)
+                    .Include(x => x.Category).OrderBy(x => x.CreatedAt).ToListAsync().ConfigureAwait(false);
+            }
+            return View(noticeList);
         }
 
         // GET: Admin/Notices/Details/5
@@ -188,6 +201,36 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         private bool NoticeExists(Guid id)
         {
             return _context.Notices.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> Search(string search, int page = 1)
+        {            
+            ViewData["Search"] = search;
+            IEnumerable<Notice> noticeList;
+            if (page < 1)
+            {
+                noticeList = await _context.Notices.Include(x => x.Category)
+                    .Where(x => 
+                    (
+                    x.Subject.ToUpper().Contains(search)
+                    || x.Description.ToUpper().Contains(search)
+                    ))
+                    .OrderBy(x => x.CreatedAt).ToListAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                noticeList = await _context.Notices
+                    .Where(x => 
+                    (
+                    x.Subject.ToUpper().Contains(search)
+                    || x.Description.ToUpper().Contains(search)
+                    ))
+                    .Skip((page - 1) * 20).Take(20)
+                    .Include(x => x.Category).OrderBy(x => x.CreatedAt).ToListAsync().ConfigureAwait(false);
+            }
+            int noticesCount = noticeList.Count();
+            ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
+            return View(noticeList);
         }
     }
 }
