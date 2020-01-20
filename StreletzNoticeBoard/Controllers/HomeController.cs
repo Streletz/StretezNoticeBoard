@@ -35,14 +35,7 @@ namespace StreletzNoticeBoard.Controllers
             }
             ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
             return View(noticesList);
-        }
-
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
+        }        
 
         public IActionResult Contact()
         {
