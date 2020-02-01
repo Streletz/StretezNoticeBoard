@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DataAccess.Data;
 using DataAccess.Data.Models;
+using DSL.Admin;
 
 namespace StreletzNoticeBoard.Areas.Admin.Controllers
 {
@@ -14,10 +15,12 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly CategoryDsl _categoryDsl;
 
         public CategoriesController(ApplicationDbContext context)
         {
             _context = context;
+            _categoryDsl = new CategoryDsl(_context);
         }
 
         // GET: Admin/Categories
@@ -48,7 +51,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             }
 
             var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id).ConfigureAwait(false);
             if (category == null)
             {
                 return NotFound();
@@ -72,12 +75,13 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(category);
-                await _context.SaveChangesAsync();
+                await _categoryDsl.AddCategory(category).ConfigureAwait(false);
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
         }
+
+
 
         // GET: Admin/Categories/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -87,7 +91,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _context.Categories.FindAsync(id).ConfigureAwait(false);
             if (category == null)
             {
                 return NotFound();
@@ -111,8 +115,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             {
                 try
                 {
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
+                    await _categoryDsl.UpdateCategory(category).ConfigureAwait(false);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -139,7 +142,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             }
 
             var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id).ConfigureAwait(false);
             if (category == null)
             {
                 return NotFound();
@@ -153,11 +156,11 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
+            await _categoryDsl.DeleteCategory(id).ConfigureAwait(false);
             return RedirectToAction(nameof(Index));
         }
+
+
 
         private bool CategoryExists(int id)
         {

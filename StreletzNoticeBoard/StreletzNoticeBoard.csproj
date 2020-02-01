@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
+    <ProjectReference Include="..\DSL\DSL.csproj" />
   </ItemGroup>
 
   <ItemGroup>
