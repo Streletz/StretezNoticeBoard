@@ -11,13 +11,29 @@ namespace DataAccess.Data.Migrations
                 name: "Categories",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false,type:"INT IDENTITY(1,1)"),
+                    Id = table.Column<int>(nullable: false, type: "INT IDENTITY(1,1)"),
                     CategoryName = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
                 });
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "CategoryName" },
+                values: new object[] { "Автомобили" });
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "CategoryName" },
+                values: new object[] { "Книги" });
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "CategoryName" },
+                values: new object[] { "Мебель" });
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "CategoryName" },
+                values: new object[] { "Услуги" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
