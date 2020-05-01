@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Site\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
   </ItemGroup>
 

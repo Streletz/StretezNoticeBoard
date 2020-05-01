@@ -7,23 +7,27 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DataAccess.Data;
 using DataAccess.Data.Models;
+using DSL.Site;
 
 namespace StreletzNoticeBoard.Controllers
 {
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly CategoryManager categoryManager;
 
         public CategoriesController(ApplicationDbContext context)
         {
-            _context = context;
+            categoryManager = new CategoryManager(context);           
         }
 
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Categories.ToListAsync());
+            return base.View(categoryManager.FindAll());
         }
+
+        
 
         // GET: Categories/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -33,7 +37,7 @@ namespace StreletzNoticeBoard.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories.FirstOrDefaultAsync(m => m.Id == id);
+            var category = categoryManager.FindById(id);
             if (category == null)
             {
                 return NotFound();
@@ -57,12 +61,13 @@ namespace StreletzNoticeBoard.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(category);
-                await _context.SaveChangesAsync();
+                await categoryManager.Add(category).ConfigureAwait(true);
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
         }
+
+        
 
         // GET: Categories/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -72,7 +77,7 @@ namespace StreletzNoticeBoard.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories.FindAsync(id);
+            var category = categoryManager.FindById(id);
             if (category == null)
             {
                 return NotFound();
@@ -96,12 +101,11 @@ namespace StreletzNoticeBoard.Controllers
             {
                 try
                 {
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
+                    await categoryManager.Update(category);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CategoryExists(category.Id))
+                    if (!categoryManager.CategoryExists(category.Id))
                     {
                         return NotFound();
                     }
@@ -115,6 +119,8 @@ namespace StreletzNoticeBoard.Controllers
             return View(category);
         }
 
+        
+
         // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -123,30 +129,32 @@ namespace StreletzNoticeBoard.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
+             
+            if (!categoryManager.CategoryExists(id))
             {
                 return NotFound();
             }
-
-            return View(category);
+            else
+            {
+                Category category = categoryManager.FindById(id);
+                return View(category);
+            }
+            
         }
+
+        
 
         // POST: Categories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
+            await categoryManager.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CategoryExists(int id)
-        {
-            return _context.Categories.Any(e => e.Id == id);
-        }
+        
+
+        
     }
 }
