@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DSL.Site
 {
-    public class NoticesManager : DslObject
+    public class NoticesManager : BaseManager
     {
         public NoticesManager(ApplicationDbContext context) : base(context)
         {

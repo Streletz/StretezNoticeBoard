@@ -17,18 +17,20 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
     public class NoticesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly CategoryAdminManager _categoryAdminManager;
         private readonly NoticesAdminManager _noticesAdminManager;
 
         public NoticesController(ApplicationDbContext context)
         {
             _context = context;
+            _categoryAdminManager = new CategoryAdminManager(context);
             _noticesAdminManager = new NoticesAdminManager(context);
         }
 
         // GET: Admin/Notices
         public async Task<IActionResult> Index(int page = 1)
         {
-            int noticesCount = _context.Notices.Count();
+            int noticesCount = _noticesAdminManager.Count();
             ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
             IEnumerable<Notice> noticeList;
             if (page < 1)
@@ -52,8 +54,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var notice = await _context.Notices
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var notice = await _noticesAdminManager.FindById(id);
             if (notice == null)
             {
                 return NotFound();
@@ -72,7 +73,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                     Category = new Category(),
                     Creator = new IdentityUser()
                 },
-                Categories = _context.Categories.OrderBy(x => x.CategoryName),
+                Categories = _categoryAdminManager.findAll(),
                 Users = _context.Users.OrderBy(x => x.UserName)
             };
             return View(viewModel);
@@ -96,7 +97,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 {
                     Notice notice = viewModel.Notice;
                     notice.Id = Guid.NewGuid();
-                    notice.Category = _context.Categories.First(x => x.Id == viewModel.CategoryId);
+                    notice.Category = _categoryAdminManager.FindById(viewModel.CategoryId).Result;
                     notice.Creator = _context.Users.First(x => x.Id == viewModel.CreatorId);
                     notice.CreatedAt = DateTime.Now;
                     _context.Add(notice);
@@ -125,7 +126,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
 
             viewModel.Notice = notice;
 
-            viewModel.Categories = _context.Categories.OrderBy(x => x.CategoryName);
+            viewModel.Categories = _categoryAdminManager.findAll();
             viewModel.Users = _context.Users.OrderBy(x => x.UserName);
             viewModel.CategoryId = notice.Category.Id;
             viewModel.CreatorId = notice.Creator.Id;
@@ -145,7 +146,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 try
                 {
                     Notice notice = viewModel.Notice;
-                    notice.Category = _context.Categories.First(x => x.Id == viewModel.CategoryId);
+                    notice.Category = _categoryAdminManager.FindById(viewModel.CategoryId).Result;
                     notice.Creator = _context.Users.First(x => x.Id == viewModel.CreatorId);
                     _context.Update(notice);
                     await _context.SaveChangesAsync();
@@ -166,7 +167,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             NoticeViewModel viewModelClear = new NoticeViewModel
             {
                 Notice = new Notice(),
-                Categories = _context.Categories.OrderBy(x => x.CategoryName),
+                Categories = _categoryAdminManager.findAll(),
                 Users = _context.Users.OrderBy(x => x.UserName)
             };
             return View(viewModelClear);
@@ -179,9 +180,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-
-            var notice = await _context.Notices
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Notice notice = await _noticesAdminManager.FindById(id);
             if (notice == null)
             {
                 return NotFound();
@@ -190,12 +189,14 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             return View(notice);
         }
 
+        
+
         // POST: Admin/Notices/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var notice = await _context.Notices.FindAsync(id);
+            var notice = await _noticesAdminManager.FindById(id);
             _context.Notices.Remove(notice);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -210,30 +211,12 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         {
             ViewData["Search"] = search;
             IEnumerable<Notice> noticeList;
-            if (page < 1)
-            {
-                noticeList = await _context.Notices.Include(x => x.Category)
-                    .Where(x =>
-                    (
-                    x.Subject.ToUpper().Contains(search)
-                    || x.Description.ToUpper().Contains(search)
-                    ))
-                    .OrderBy(x => x.CreatedAt).ToListAsync().ConfigureAwait(false);
-            }
-            else
-            {
-                noticeList = await _context.Notices
-                    .Where(x =>
-                    (
-                    x.Subject.ToUpper().Contains(search)
-                    || x.Description.ToUpper().Contains(search)
-                    ))
-                    .Skip((page - 1) * 20).Take(20)
-                    .Include(x => x.Category).OrderBy(x => x.CreatedAt).ToListAsync().ConfigureAwait(false);
-            }
+            noticeList = await _noticesAdminManager.Search(search, page).ConfigureAwait(false);
             int noticesCount = noticeList.Count();
             ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
             return View(noticeList);
         }
+
+        
     }
 }

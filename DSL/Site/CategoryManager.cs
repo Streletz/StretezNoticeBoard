@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DSL.Site
 {
-    public class CategoryManager : DslObject
+    public class CategoryManager : BaseManager
     {
         public CategoryManager(ApplicationDbContext context) : base(context)
         {

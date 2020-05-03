@@ -12,7 +12,7 @@ namespace DSL.Admin
     /// <summary>
     /// Бзнес-логика для категорий (админпанель).
     /// </summary>
-    public class CategoryAdminManager : DslObject
+    public class CategoryAdminManager : BaseManager
     {
         public CategoryAdminManager(ApplicationDbContext context) : base(context)
         {
@@ -102,5 +102,10 @@ namespace DSL.Admin
             }
             return categoryList;
         }
+        public IEnumerable<Category> findAll()
+        {
+            return _context.Categories.OrderBy(x => x.CategoryName);
+        }
     }
+    
 }

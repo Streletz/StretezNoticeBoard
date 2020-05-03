@@ -7,7 +7,7 @@ using System.Text;
 
 namespace DSL.Site
 {
-    public class SiteUserManager : DslObject
+    public class SiteUserManager : BaseManager
     {
         public SiteUserManager(ApplicationDbContext context) : base(context)
         {
