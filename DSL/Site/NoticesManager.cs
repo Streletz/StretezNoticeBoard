@@ -22,14 +22,18 @@ namespace DSL.Site
                 .FirstOrDefaultAsync(m => m.Id == id).ConfigureAwait(true);
         }
 
-        public async Task Update(Notice notice)
+        public async Task Update(Notice notice, IdentityUser user)
         {
+            notice.Creator = _context.Users.First(x => x.Id == user.Id);
             _context.Update(notice);
             await _context.SaveChangesAsync();
         }
 
-        public async Task Add(Notice notice)
+        public async Task Add(Notice notice, IdentityUser user)
         {
+            notice.Id = Guid.NewGuid();
+            notice.Creator = _context.Users.First(x => x.Id == user.Id);
+            notice.CreatedAt = DateTime.Now;
             _context.Add(notice);
             await _context.SaveChangesAsync();
         }
@@ -57,6 +61,7 @@ namespace DSL.Site
             }
             return noticesList;
         }
+
 
         public bool NoticeExists(Guid id)
         {

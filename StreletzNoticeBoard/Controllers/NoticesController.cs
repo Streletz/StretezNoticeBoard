@@ -19,6 +19,7 @@ namespace StreletzNoticeBoard.Controllers
         private UserManager<IdentityUser> _userManager;
         private readonly NoticesManager _noticesManager;
         private readonly CategoryManager _categoryManager;
+        private readonly SiteUserManager _siteUserManager;
 
         public NoticesController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
@@ -26,6 +27,7 @@ namespace StreletzNoticeBoard.Controllers
             _userManager = userManager;
             _noticesManager = new NoticesManager(context);
             _categoryManager = new CategoryManager(context);
+            _siteUserManager = new SiteUserManager(context);
         }
 
         // GET: Notices
@@ -64,7 +66,7 @@ namespace StreletzNoticeBoard.Controllers
             return View(notice);
         }
 
-        
+
 
         // GET: Admin/Notices/Create
         public async Task<IActionResult> Create()
@@ -75,7 +77,7 @@ namespace StreletzNoticeBoard.Controllers
                 Notice = new Notice
                 {
                     Category = new Category(),
-                    Creator = _context.Users.First(x => x.Id == user.Id)
+                    Creator = user
                 },
                 Categories = _categoryManager.FindAll().Result,
                 Users = _context.Users.OrderBy(x => x.UserName)
@@ -101,11 +103,8 @@ namespace StreletzNoticeBoard.Controllers
                 {
                     var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
                     Notice notice = viewModel.Notice;
-                    notice.Id = Guid.NewGuid();
                     notice.Category = _categoryManager.FindById(viewModel.CategoryId);
-                    notice.Creator = _context.Users.First(x => x.Id == user.Id);
-                    notice.CreatedAt = DateTime.Now;
-                    await _noticesManager.Add(notice);
+                    await _noticesManager.Add(notice, user);
                     return RedirectToAction("Index", "Home");
                 }
             }
@@ -113,7 +112,7 @@ namespace StreletzNoticeBoard.Controllers
             return View(noticeViewModel);
         }
 
-        
+
 
 
         // GET: Notices/Edit/5
@@ -155,8 +154,7 @@ namespace StreletzNoticeBoard.Controllers
                     IdentityUser user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
                     Notice notice = viewModel.Notice;
                     notice.Category = _categoryManager.FindById(viewModel.CategoryId);
-                    notice.Creator = _context.Users.First(x => x.Id == user.Id);
-                    await _noticesManager.Update(notice);
+                    await _noticesManager.Update(notice, user);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -180,21 +178,21 @@ namespace StreletzNoticeBoard.Controllers
             return View(viewModelClear);
         }
 
-        
 
-        
+
+
 
         public async Task<IActionResult> Search(string searchString, int page = 1)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
             //int noticesCount = _context.Notices.Where(x => x.Creator.Id == user.Id).Count();
-            IEnumerable<Notice>  noticesList =_noticesManager.Search(searchString, page, user);
+            IEnumerable<Notice> noticesList = _noticesManager.Search(searchString, page, user);
             int noticesCount = noticesList.Count();
             ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
             ViewData["Search"] = searchString;
             return View(noticesList);
         }
 
-        
+
     }
 }
