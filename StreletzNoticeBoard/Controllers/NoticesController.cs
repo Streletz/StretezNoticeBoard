@@ -14,16 +14,14 @@ using DSL.Site;
 namespace StreletzNoticeBoard.Controllers
 {
     public class NoticesController : Controller
-    {
-        private readonly ApplicationDbContext _context;
+    {        
         private UserManager<IdentityUser> _userManager;
         private readonly NoticesManager _noticesManager;
         private readonly CategoryManager _categoryManager;
         private readonly SiteUserManager _siteUserManager;
 
         public NoticesController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
-        {
-            _context = context;
+        {            
             _userManager = userManager;
             _noticesManager = new NoticesManager(context);
             _categoryManager = new CategoryManager(context);
@@ -34,21 +32,14 @@ namespace StreletzNoticeBoard.Controllers
         public async Task<IActionResult> Index(int page = 1)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
-            int noticesCount = _context.Notices.Where(x => x.Creator.Id == user.Id).Count();
+            int noticesCount = _noticesManager.CountByUser(user);
             IEnumerable<Notice> noticesList;
-            if (page < 1)
-            {
-                noticesList = await _context.Notices.Include(x => x.Category)
-                    .Where(x => x.Creator.Id == user.Id).ToListAsync().ConfigureAwait(false);
-            }
-            else
-            {
-                noticesList = await _context.Notices.Include(x => x.Category)
-                    .Where(x => x.Creator.Id == user.Id).Skip((page - 1) * 20).Take(20).ToListAsync().ConfigureAwait(false);
-            }
+            noticesList = await _noticesManager.FindByUser(page, user).ConfigureAwait(false);
             ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
             return View(noticesList);
         }
+
+        
 
         // GET: Notices/Details/5
         public async Task<IActionResult> Details(Guid? id)
@@ -80,7 +71,7 @@ namespace StreletzNoticeBoard.Controllers
                     Creator = user
                 },
                 Categories = _categoryManager.FindAll().Result,
-                Users = _context.Users.OrderBy(x => x.UserName)
+                Users = _siteUserManager.findAll()
             };
             return View(viewModel);
         }
@@ -94,8 +85,8 @@ namespace StreletzNoticeBoard.Controllers
         {
             NoticeViewModel noticeViewModel = new NoticeViewModel
             {
-                Categories = _context.Categories.OrderBy(x => x.CategoryName),
-                Users = _context.Users.OrderBy(x => x.UserName)
+                Categories = _categoryManager.FindAll().Result,
+                Users = _siteUserManager.findAll()
             };
             if (ModelState.IsValid)
             {
@@ -133,7 +124,7 @@ namespace StreletzNoticeBoard.Controllers
             viewModel.Notice = notice;
 
             viewModel.Categories = _categoryManager.FindAll().Result;
-            viewModel.Users = _context.Users.OrderBy(x => x.UserName);
+            viewModel.Users = _siteUserManager.findAll();
             viewModel.CategoryId = notice.Category.Id;
             viewModel.CreatorId = notice.Creator.Id;
 
@@ -172,8 +163,8 @@ namespace StreletzNoticeBoard.Controllers
             NoticeViewModel viewModelClear = new NoticeViewModel
             {
                 Notice = new Notice(),
-                Categories = _context.Categories.OrderBy(x => x.CategoryName),
-                Users = _context.Users.OrderBy(x => x.UserName)
+                Categories = _categoryManager.FindAll().Result,
+                Users = _siteUserManager.findAll()
             };
             return View(viewModelClear);
         }

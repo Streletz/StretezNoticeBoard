@@ -67,5 +67,26 @@ namespace DSL.Site
         {
             return _context.Notices.Any(e => e.Id == id);
         }
+
+        public int CountByUser(IdentityUser user)
+        {
+            return _context.Notices.Where(x => x.Creator.Id == user.Id).Count();
+        }
+
+        public async Task<IEnumerable<Notice>> FindByUser(int page, IdentityUser user)
+        {
+            IEnumerable<Notice> noticesList;
+            if (page < 1)
+            {
+                noticesList = await _context.Notices.Include(x => x.Category)
+                    .Where(x => x.Creator.Id == user.Id).ToListAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                noticesList = await _context.Notices.Include(x => x.Category)
+                    .Where(x => x.Creator.Id == user.Id).Skip((page - 1) * 20).Take(20).ToListAsync().ConfigureAwait(false);
+            }
+            return noticesList;
+        }
     }
 }

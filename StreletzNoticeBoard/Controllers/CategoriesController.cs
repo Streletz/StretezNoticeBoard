@@ -12,8 +12,7 @@ using DSL.Site;
 namespace StreletzNoticeBoard.Controllers
 {
     public class CategoriesController : Controller
-    {
-        private readonly ApplicationDbContext _context;
+    {        
         private readonly CategoryManager _categoryManager;
 
         public CategoriesController(ApplicationDbContext context)

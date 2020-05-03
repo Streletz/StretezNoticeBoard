@@ -11,12 +11,17 @@ namespace DSL.Site
     {
         public SiteUserManager(ApplicationDbContext context) : base(context)
         {
-            _context.Users.First(x => x.Id == user.Id)
+            
         }
 
-        public IdentityUser FindById()
+        public IdentityUser FindById(String id)
         {
-            return _context.Users.First(x => x.Id == user.Id);
+            return _context.Users.First(x => x.Id == id);
+        }
+
+        public IEnumerable<IdentityUser> findAll()
+        {
+            return _context.Users.OrderBy(x => x.UserName);
         }
     }
 }
