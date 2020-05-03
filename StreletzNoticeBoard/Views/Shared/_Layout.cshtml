@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using System.Reflection
 
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
@@ -67,7 +68,7 @@
         <footer>
             <div class="row">
                 <div class="col-md-6">
-                    <p> StreletzNoticeBoard 1.0.0</p>
+                    <p> StreletzNoticeBoard @(Assembly.GetExecutingAssembly().GetName().Version.ToString())</p>
                     <p>&copy; 2020 - <a href="http://streletzcoder.ru/">Streletzcoder</a></p>
                 </div>
                 <div class="col-md-6">
