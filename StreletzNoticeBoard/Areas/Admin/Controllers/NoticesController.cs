@@ -15,16 +15,16 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class NoticesController : Controller
-    {
-        private readonly ApplicationDbContext _context;
+    {        
         private readonly CategoryAdminManager _categoryAdminManager;
         private readonly NoticesAdminManager _noticesAdminManager;
+        private readonly UserAdminManager _userAdminManager;
 
         public NoticesController(ApplicationDbContext context)
-        {
-            _context = context;
+        {           
             _categoryAdminManager = new CategoryAdminManager(context);
             _noticesAdminManager = new NoticesAdminManager(context);
+            _userAdminManager = new UserAdminManager(context);
         }
 
         // GET: Admin/Notices
@@ -66,10 +66,12 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                     Creator = new IdentityUser()
                 },
                 Categories = _categoryAdminManager.findAll(),
-                Users = _context.Users.OrderBy(x => x.UserName)
+                Users = _userAdminManager.FindAll()
             };
             return View(viewModel);
         }
+
+       
 
         // POST: Admin/Notices/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -81,7 +83,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             NoticeViewModel noticeViewModel = new NoticeViewModel
             {
                 Categories = _categoryAdminManager.findAll(),
-                Users = _context.Users.OrderBy(x => x.UserName)
+                Users = _userAdminManager.FindAll()
             };
             if (ModelState.IsValid)
             {
@@ -89,15 +91,14 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 {
                     Notice notice = viewModel.Notice;
                     notice.Category = _categoryAdminManager.FindById(viewModel.CategoryId).Result;
-                    notice.Creator = _context.Users.First(x => x.Id == viewModel.CreatorId);
+                    notice.Creator = _userAdminManager.FindById(viewModel.CreatorId);
                     await _noticesAdminManager.Add(notice);
                     return RedirectToAction(nameof(Index));
                 }
             }
 
             return View(noticeViewModel);
-        }
-        
+        } 
 
         // GET: Admin/Notices/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
@@ -117,7 +118,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             viewModel.Notice = notice;
 
             viewModel.Categories = _categoryAdminManager.findAll();
-            viewModel.Users = _context.Users.OrderBy(x => x.UserName);
+            viewModel.Users = _userAdminManager.FindAll();
             viewModel.CategoryId = notice.Category.Id;
             viewModel.CreatorId = notice.Creator.Id;
             return View(viewModel);
@@ -138,7 +139,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 {
                     Notice notice = viewModel.Notice;
                     notice.Category = _categoryAdminManager.FindById(viewModel.CategoryId).Result;
-                    notice.Creator = _context.Users.First(x => x.Id == viewModel.CreatorId);
+                    notice.Creator = _userAdminManager.FindById(viewModel.CreatorId);
                     await _noticesAdminManager.Update(notice);
                 }
                 catch (DbUpdateConcurrencyException)
@@ -158,7 +159,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             {
                 Notice = new Notice(),
                 Categories = _categoryAdminManager.findAll(),
-                Users = _context.Users.OrderBy(x => x.UserName)
+                Users = _userAdminManager.FindAll()
             };
             return View(viewModelClear);
         }
