@@ -45,12 +45,56 @@ namespace DSL.Admin
                     .Include(x => x.Category).OrderBy(x => x.CreatedAt).ToListAsync().ConfigureAwait(false);
             }
             return noticeList;
+        }        
+
+        public async Task Delete(Notice notice)
+        {
+            _context.Notices.Remove(notice);
+            await _context.SaveChangesAsync();
+        }
+
+        public bool NoticeExists(Guid id)
+        {
+            return _context.Notices.Any(e => e.Id == id);
         }
 
         public async Task<Notice> FindById(Guid? id)
         {
-            return await _context.Notices
-                .FirstOrDefaultAsync(m => m.Id == id);
+            return await _context.Notices.Include(x => x.Category).Include(x => x.Creator).FirstAsync(x => x.Id == id);
+        }
+        public async Task Add(Notice notice)
+        {
+            notice.Id = Guid.NewGuid();
+            notice.CreatedAt = DateTime.Now;
+            _context.Add(notice);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task Update(Notice notice)
+        {
+            _context.Update(notice);
+            await _context.SaveChangesAsync();
+        }
+        public async Task<IEnumerable<Notice>> FindPerPage(int page)
+        {
+            IEnumerable<Notice> noticeList;
+            if (page < 1)
+            {
+                noticeList = await FindAll().ConfigureAwait(false);
+            }
+            else
+            {
+                noticeList = await _context.Notices
+                    .Skip((page - 1) * 20).Take(20)
+                    .Include(x => x.Category).OrderBy(x => x.CreatedAt).ToListAsync().ConfigureAwait(false);
+            }
+
+            return noticeList;
+        }
+
+        public Task<List<Notice>> FindAll()
+        {
+            return _context.Notices.Include(x => x.Category).OrderBy(x => x.CreatedAt).ToListAsync();
         }
     }
 }

@@ -32,19 +32,11 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         {
             int noticesCount = _noticesAdminManager.Count();
             ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
-            IEnumerable<Notice> noticeList;
-            if (page < 1)
-            {
-                noticeList = await _context.Notices.Include(x => x.Category).OrderBy(x => x.CreatedAt).ToListAsync().ConfigureAwait(false);
-            }
-            else
-            {
-                noticeList = await _context.Notices
-                    .Skip((page - 1) * 20).Take(20)
-                    .Include(x => x.Category).OrderBy(x => x.CreatedAt).ToListAsync().ConfigureAwait(false);
-            }
+            IEnumerable<Notice> noticeList = await _noticesAdminManager.FindPerPage(page).ConfigureAwait(false);
             return View(noticeList);
         }
+
+        
 
         // GET: Admin/Notices/Details/5
         public async Task<IActionResult> Details(Guid? id)
@@ -88,7 +80,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         {
             NoticeViewModel noticeViewModel = new NoticeViewModel
             {
-                Categories = _context.Categories.OrderBy(x => x.CategoryName),
+                Categories = _categoryAdminManager.findAll(),
                 Users = _context.Users.OrderBy(x => x.UserName)
             };
             if (ModelState.IsValid)
@@ -96,18 +88,16 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 if (viewModel.Notice != null)
                 {
                     Notice notice = viewModel.Notice;
-                    notice.Id = Guid.NewGuid();
                     notice.Category = _categoryAdminManager.FindById(viewModel.CategoryId).Result;
                     notice.Creator = _context.Users.First(x => x.Id == viewModel.CreatorId);
-                    notice.CreatedAt = DateTime.Now;
-                    _context.Add(notice);
-                    await _context.SaveChangesAsync();
+                    await _noticesAdminManager.Add(notice);
                     return RedirectToAction(nameof(Index));
                 }
             }
 
             return View(noticeViewModel);
         }
+        
 
         // GET: Admin/Notices/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
@@ -117,7 +107,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var notice = await _context.Notices.Include(x => x.Category).Include(x => x.Creator).FirstAsync(x => x.Id == id);
+            var notice = await _noticesAdminManager.FindById(id);
             if (notice == null)
             {
                 return NotFound();
@@ -130,9 +120,10 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             viewModel.Users = _context.Users.OrderBy(x => x.UserName);
             viewModel.CategoryId = notice.Category.Id;
             viewModel.CreatorId = notice.Creator.Id;
-
             return View(viewModel);
         }
+
+        
 
         // POST: Admin/Notices/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -148,12 +139,11 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                     Notice notice = viewModel.Notice;
                     notice.Category = _categoryAdminManager.FindById(viewModel.CategoryId).Result;
                     notice.Creator = _context.Users.First(x => x.Id == viewModel.CreatorId);
-                    _context.Update(notice);
-                    await _context.SaveChangesAsync();
+                    await _noticesAdminManager.Update(notice);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!NoticeExists(viewModel.Notice.Id))
+                    if (!_noticesAdminManager.NoticeExists(viewModel.Notice.Id))
                     {
                         return NotFound();
                     }
@@ -172,6 +162,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             };
             return View(viewModelClear);
         }
+        
 
         // GET: Admin/Notices/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
@@ -197,15 +188,13 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var notice = await _noticesAdminManager.FindById(id);
-            _context.Notices.Remove(notice);
-            await _context.SaveChangesAsync();
+            await _noticesAdminManager.Delete(notice);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool NoticeExists(Guid id)
-        {
-            return _context.Notices.Any(e => e.Id == id);
-        }
+        
+
+        
 
         public async Task<IActionResult> Search(string search, int page = 1)
         {
@@ -216,7 +205,6 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
             return View(noticeList);
         }
-
         
     }
 }
