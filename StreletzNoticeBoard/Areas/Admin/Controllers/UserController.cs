@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataAccess.Data;
+using DSL.Admin;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         private readonly ApplicationDbContext _context;
         private UserManager<IdentityUser> _userManager;
         private RoleManager<IdentityRole> _roleManager;
+        private readonly UserAdminManager _userAdminManager;
 
 
         public UserController(ApplicationDbContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
@@ -24,12 +26,12 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _userAdminManager = new UserAdminManager(context);
         }
         // GET: User
         public ActionResult Index()
         {
             IEnumerable<IdentityUser> rawUsers = _context.Users.OrderBy(x => x.UserName);
-            //IEnumerable<UserViewModel> users = rawUsers.Se;
             IEnumerable<UserViewModel> users = new LinkedList<UserViewModel>();
             foreach (IdentityUser rawuser in rawUsers)
             {
@@ -43,7 +45,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         // GET: User/Details/5
         public ActionResult Details(string id)
         {
-            IdentityUser rawUser = _context.Users.First(x => x.Id == id);
+            IdentityUser rawUser = _userAdminManager.FindById(id);
             UserViewModel model = new UserViewModel
             {
                 Id = rawUser.Id,
@@ -93,7 +95,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         // GET: User/Edit/5
         public ActionResult Edit(string id)
         {
-            IdentityUser rawUser = _context.Users.First(x => x.Id == id);
+            IdentityUser rawUser = _userAdminManager.FindById(id);
             UserViewModel model = new UserViewModel
             {
                 Id = rawUser.Id,
@@ -112,7 +114,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             try
             {
                 // TODO: Add update logic here
-                IdentityUser rawUser = _context.Users.First(x => x.Id == id);
+                IdentityUser rawUser = _userAdminManager.FindById(id);
                 rawUser.UserName = viewModel.UserName;
                 rawUser.Email = viewModel.UserName;
                 IdentityResult result = await _userManager.UpdateAsync(rawUser).ConfigureAwait(false);
@@ -131,7 +133,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         // GET: User/Delete/5
         public ActionResult Delete(string id)
         {
-            IdentityUser rawUser = _context.Users.First(x => x.Id == id);
+            IdentityUser rawUser = _userAdminManager.FindById(id);
             UserViewModel model = new UserViewModel
             {
                 Id = rawUser.Id,
@@ -149,7 +151,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         {
             try
             {
-                IdentityUser rawUser = _context.Users.First(x => x.Id == id);
+                IdentityUser rawUser = _userAdminManager.FindById(id);
                 _userManager.DeleteAsync(rawUser);
                 return RedirectToAction(nameof(Index));
             }
