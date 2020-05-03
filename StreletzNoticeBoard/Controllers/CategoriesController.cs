@@ -14,17 +14,17 @@ namespace StreletzNoticeBoard.Controllers
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly CategoryManager categoryManager;
+        private readonly CategoryManager _categoryManager;
 
         public CategoriesController(ApplicationDbContext context)
         {
-            categoryManager = new CategoryManager(context);           
+            _categoryManager = new CategoryManager(context);           
         }
 
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-            return base.View(categoryManager.FindAll());
+            return base.View(_categoryManager.FindAll());
         }
 
         
@@ -37,7 +37,7 @@ namespace StreletzNoticeBoard.Controllers
                 return NotFound();
             }
 
-            var category = categoryManager.FindById(id);
+            var category = _categoryManager.FindById(id);
             if (category == null)
             {
                 return NotFound();
@@ -61,7 +61,7 @@ namespace StreletzNoticeBoard.Controllers
         {
             if (ModelState.IsValid)
             {
-                await categoryManager.Add(category).ConfigureAwait(true);
+                await _categoryManager.Add(category).ConfigureAwait(true);
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
@@ -77,7 +77,7 @@ namespace StreletzNoticeBoard.Controllers
                 return NotFound();
             }
 
-            var category = categoryManager.FindById(id);
+            var category = _categoryManager.FindById(id);
             if (category == null)
             {
                 return NotFound();
@@ -101,11 +101,11 @@ namespace StreletzNoticeBoard.Controllers
             {
                 try
                 {
-                    await categoryManager.Update(category);
+                    await _categoryManager.Update(category);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!categoryManager.CategoryExists(category.Id))
+                    if (!_categoryManager.CategoryExists(category.Id))
                     {
                         return NotFound();
                     }
@@ -130,13 +130,13 @@ namespace StreletzNoticeBoard.Controllers
             }
 
              
-            if (!categoryManager.CategoryExists(id))
+            if (!_categoryManager.CategoryExists(id))
             {
                 return NotFound();
             }
             else
             {
-                Category category = categoryManager.FindById(id);
+                Category category = _categoryManager.FindById(id);
                 return View(category);
             }
             
@@ -149,7 +149,7 @@ namespace StreletzNoticeBoard.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await categoryManager.Delete(id);
+            await _categoryManager.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 

@@ -3,6 +3,7 @@ using DataAccess.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,7 +43,7 @@ namespace DSL.Site
 
         public async Task<List<Category>> FindAll()
         {
-            return await _context.Categories.ToListAsync();
+            return await _context.Categories.OrderBy(x => x.CategoryName).ToListAsync();
         }
 
 
