@@ -13,34 +13,23 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class CategoriesController : Controller
-    {
-        private readonly ApplicationDbContext _context;
-        private readonly CategoryDsl _categoryDsl;
+    {       
+        private readonly CategoryAdminManager _categoryDsl;
 
         public CategoriesController(ApplicationDbContext context)
-        {
-            _context = context;
-            _categoryDsl = new CategoryDsl(_context);
+        {            
+            _categoryDsl = new CategoryAdminManager(context);
         }
 
         // GET: Admin/Categories
         public async Task<IActionResult> Index(int page = 1)
         {
-            int noticesCount = _context.Notices.Count();
-            ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
-            IEnumerable<Category> categoryList;
-            if (page < 1)
-            {
-                categoryList = await _context.Categories.OrderBy(x => x.CategoryName).ToListAsync().ConfigureAwait(false);
-            }
-            else
-            {
-                categoryList = await _context.Categories
-                    .Skip((page - 1) * 20).Take(20)
-                    .OrderBy(x => x.CategoryName).ToListAsync().ConfigureAwait(false);
-            }
+            int categoriesCount = _categoryDsl.Count();
+            ViewData["PageCount"] = categoriesCount <= 20 ? 1 : (categoriesCount / 20) + 1;
+            IEnumerable<Category> categoryList = await _categoryDsl.FindPerPage(page).ConfigureAwait(false);
             return View(categoryList);
         }
+        
 
         // GET: Admin/Categories/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -50,8 +39,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id).ConfigureAwait(false);
+            var category = await _categoryDsl.FindById(id).ConfigureAwait(false);
             if (category == null)
             {
                 return NotFound();
@@ -91,7 +79,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories.FindAsync(id).ConfigureAwait(false);
+            var category = await _categoryDsl.FindById(id).ConfigureAwait(false);
             if (category == null)
             {
                 return NotFound();
@@ -119,7 +107,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CategoryExists(category.Id))
+                    if (!_categoryDsl.CategoryExists(category.Id))
                     {
                         return NotFound();
                     }
@@ -140,9 +128,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id).ConfigureAwait(false);
+            Category category = await _categoryDsl.FindById(id).ConfigureAwait(false);
             if (category == null)
             {
                 return NotFound();
@@ -150,6 +136,8 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
 
             return View(category);
         }
+
+        
 
         // POST: Admin/Categories/Delete/5
         [HttpPost, ActionName("Delete")]
@@ -162,29 +150,17 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
 
 
 
-        private bool CategoryExists(int id)
-        {
-            return _context.Categories.Any(e => e.Id == id);
-        }
+        
         public async Task<IActionResult> Search(string search, int page = 1)
         {
             IEnumerable<Category> categoryList;
-            if (page < 1)
-            {
-                categoryList = await _context.Categories
-                    .OrderBy(x => x.CategoryName).ToListAsync().ConfigureAwait(false);
-            }
-            else
-            {
-                categoryList = await _context.Categories
-                    .Where(x => x.CategoryName.Contains(search))
-                    .Skip((page - 1) * 20).Take(20)
-                    .OrderBy(x => x.CategoryName).ToListAsync().ConfigureAwait(false);
-            }
+            categoryList = await _categoryDsl.Search(search, page).ConfigureAwait(false);
             int noticesCount = categoryList.Count();
             ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
             ViewData["Search"] = search;
             return View(categoryList);
         }
+
+        
     }
 }

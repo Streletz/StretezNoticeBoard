@@ -9,6 +9,7 @@ using DataAccess.Data;
 using DataAccess.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using StreletzNoticeBoard.Areas.Admin.Components;
+using DSL.Admin;
 
 namespace StreletzNoticeBoard.Areas.Admin.Controllers
 {
@@ -16,10 +17,12 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
     public class NoticesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly NoticesAdminManager _noticesAdminManager;
 
         public NoticesController(ApplicationDbContext context)
         {
             _context = context;
+            _noticesAdminManager = new NoticesAdminManager(context);
         }
 
         // GET: Admin/Notices
@@ -204,13 +207,13 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         }
 
         public async Task<IActionResult> Search(string search, int page = 1)
-        {            
+        {
             ViewData["Search"] = search;
             IEnumerable<Notice> noticeList;
             if (page < 1)
             {
                 noticeList = await _context.Notices.Include(x => x.Category)
-                    .Where(x => 
+                    .Where(x =>
                     (
                     x.Subject.ToUpper().Contains(search)
                     || x.Description.ToUpper().Contains(search)
@@ -220,7 +223,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             else
             {
                 noticeList = await _context.Notices
-                    .Where(x => 
+                    .Where(x =>
                     (
                     x.Subject.ToUpper().Contains(search)
                     || x.Description.ToUpper().Contains(search)
