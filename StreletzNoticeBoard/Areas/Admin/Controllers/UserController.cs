@@ -40,9 +40,6 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             }
             return View(users);
         }
-
-
-
         // GET: User/Details/5
         public ActionResult Details(string id)
         {
@@ -56,7 +53,6 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             };
             return View(model);
         }
-
         // GET: User/Create
         public ActionResult Create()
         {
@@ -66,9 +62,6 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             };
             return View(model);
         }
-
-
-
         // POST: User/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -90,9 +83,6 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 return View();
             }
         }
-
-
-
         // GET: User/Edit/5
         public ActionResult Edit(string id)
         {
@@ -106,7 +96,6 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             };
             return View(model);
         }
-
         // POST: User/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -126,9 +115,6 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 return View();
             }
         }
-
-
-
         // GET: User/Delete/5
         public ActionResult Delete(string id)
         {
@@ -158,7 +144,5 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 return View();
             }
         }
-
-
     }
 }
