@@ -26,21 +26,22 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
-            _userAdminManager = new UserAdminManager(context);
+            _userAdminManager = new UserAdminManager(context, userManager, roleManager);
         }
         // GET: User
         public ActionResult Index()
         {
-            IEnumerable<IdentityUser> rawUsers = _context.Users.OrderBy(x => x.UserName);
+            IEnumerable<IdentityUser> rawUsers = _userAdminManager.FindAll();
             IEnumerable<UserViewModel> users = new LinkedList<UserViewModel>();
             foreach (IdentityUser rawuser in rawUsers)
             {
                 UserViewModel user = UserViewModel.Parse(rawuser, _context, _userManager);
                 ((LinkedList<UserViewModel>)users).AddLast(user);
             }
-            int a = rawUsers.Count();
             return View(users);
         }
+
+
 
         // GET: User/Details/5
         public ActionResult Details(string id)
@@ -61,10 +62,12 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         {
             UserViewModel model = new UserViewModel
             {
-                Roles = _context.Roles.OrderBy(x => x.Name)
+                Roles = _userAdminManager.FindAllRoles()
             };
             return View(model);
         }
+
+
 
         // POST: User/Create
         [HttpPost]
@@ -79,11 +82,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                     Email = viewModel.UserName,
                     UserName = viewModel.UserName
                 };
-                IdentityResult result = await _userManager.CreateAsync(user, viewModel.Password).ConfigureAwait(false);
-                if (result.Succeeded)
-                {
-                    await _userManager.AddToRoleAsync(user, viewModel.Role).ConfigureAwait(false);
-                }
+                await _userAdminManager.Add(viewModel.Password, user, viewModel.Role).ConfigureAwait(false);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -91,6 +90,8 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 return View();
             }
         }
+
+
 
         // GET: User/Edit/5
         public ActionResult Edit(string id)
@@ -117,11 +118,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 IdentityUser rawUser = _userAdminManager.FindById(id);
                 rawUser.UserName = viewModel.UserName;
                 rawUser.Email = viewModel.UserName;
-                IdentityResult result = await _userManager.UpdateAsync(rawUser).ConfigureAwait(false);
-                if (result.Succeeded)
-                {
-                    await _userManager.AddToRoleAsync(rawUser, viewModel.Role).ConfigureAwait(false);
-                }
+                await _userAdminManager.Update(viewModel.Role, rawUser).ConfigureAwait(false);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -129,6 +126,8 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 return View();
             }
         }
+
+
 
         // GET: User/Delete/5
         public ActionResult Delete(string id)
@@ -139,7 +138,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 Id = rawUser.Id,
                 UserName = rawUser.UserName,
                 Role = _userManager.GetRolesAsync(rawUser).Result.First(),
-                Roles = _context.Roles.OrderBy(x => x.Name)
+                Roles = _userAdminManager.FindAllRoles()
             };
             return View(model);
         }
@@ -151,8 +150,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         {
             try
             {
-                IdentityUser rawUser = _userAdminManager.FindById(id);
-                _userManager.DeleteAsync(rawUser);
+                _userAdminManager.Delete(id);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -160,5 +158,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
                 return View();
             }
         }
+
+
     }
 }
