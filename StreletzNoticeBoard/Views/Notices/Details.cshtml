@@ -42,14 +42,17 @@
     </dl>
 </div>
 <div>
-    @if ((user.Id == Model.Creator.Id) && (!isAdmin))
+    @if (user != null)
     {
-        <a asp-action="Edit" asp-route-id="@Model.Id">Редактировать</a>    
-    }
-    @if (isAdmin)
-    {
-        <a asp-area="Admin" asp-controller="Notices" asp-action="Edit" asp-route-id="@Model.Id">Редактировать</a> <span>|</span>
-        <a asp-area="Admin" asp-controller="Notices" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
+        @if ((user.Id == Model.Creator.Id) && (!isAdmin))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id">Редактировать</a>
+        }
+        @if (isAdmin)
+        {
+            <a asp-area="Admin" asp-controller="Notices" asp-action="Edit" asp-route-id="@Model.Id">Редактировать</a> <span>|</span>
+            <a asp-area="Admin" asp-controller="Notices" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
+        }
     }
 
 </div>

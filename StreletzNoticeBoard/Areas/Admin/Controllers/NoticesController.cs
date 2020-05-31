@@ -15,16 +15,16 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class NoticesController : Controller
-    {        
+    {
         private readonly CategoryAdminManager _categoryAdminManager;
         private readonly NoticesAdminManager _noticesAdminManager;
         private readonly UserAdminManager _userAdminManager;
 
-        public NoticesController(ApplicationDbContext context)
-        {           
+        public NoticesController(ApplicationDbContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        {
             _categoryAdminManager = new CategoryAdminManager(context);
             _noticesAdminManager = new NoticesAdminManager(context);
-            _userAdminManager = new UserAdminManager(context);
+            _userAdminManager = new UserAdminManager(context, userManager, roleManager);
         }
 
         // GET: Admin/Notices
@@ -36,7 +36,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             return View(noticeList);
         }
 
-        
+
 
         // GET: Admin/Notices/Details/5
         public async Task<IActionResult> Details(Guid? id)
@@ -71,7 +71,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             return View(viewModel);
         }
 
-       
+
 
         // POST: Admin/Notices/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -98,7 +98,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             }
 
             return View(noticeViewModel);
-        } 
+        }
 
         // GET: Admin/Notices/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
@@ -124,7 +124,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             return View(viewModel);
         }
 
-        
+
 
         // POST: Admin/Notices/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -163,7 +163,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             };
             return View(viewModelClear);
         }
-        
+
 
         // GET: Admin/Notices/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
@@ -181,7 +181,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             return View(notice);
         }
 
-        
+
 
         // POST: Admin/Notices/Delete/5
         [HttpPost, ActionName("Delete")]
@@ -193,9 +193,9 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        
 
-        
+
+
 
         public async Task<IActionResult> Search(string search, int page = 1)
         {
@@ -206,6 +206,6 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
             return View(noticeList);
         }
-        
+
     }
 }
