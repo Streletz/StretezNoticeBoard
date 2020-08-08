@@ -13,7 +13,6 @@
     <div class="col-md-4">
         <h2>Статистика</h2>
         @await Component.InvokeAsync("Statistic", new { maxPriority = 2, isDone = false })
-
     </div>
     <div class="col-md-4">
         <h2>Объявления</h2>
@@ -29,4 +28,9 @@
         </ul>
     </div>
 </div>
-
+<div class="row">
+    <div class="col-md-4">
+        <h2>Настройки</h2>
+        <a asp-area="Admin" asp-controller="Settings" asp-action="Edit">Изменить настройки</a>
+    </div>
+</div>

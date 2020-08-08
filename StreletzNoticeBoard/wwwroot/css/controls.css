@@ -1,0 +1,7 @@
+﻿.number_field {
+    -moz-appearance: textfield;
+}
+
+    .number_field::-webkit-inner-spin-button {
+        display: none;
+    }

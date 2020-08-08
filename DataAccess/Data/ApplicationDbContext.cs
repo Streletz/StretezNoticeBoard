@@ -13,6 +13,10 @@ namespace DataAccess.Data
     public class ApplicationDbContext : IdentityDbContext
     {
         /// <summary>
+        /// Настройки приложения.
+        /// </summary>
+        public DbSet<AppSettings> Settings { get; set; }
+        /// <summary>
         /// Категории объявлений.
         /// </summary>
         public DbSet<Category> Categories { get; set; }
