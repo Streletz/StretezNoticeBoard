@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DSL.Admin
+namespace DSL.Site
 {
-    public class SettingsManager : BaseManager, IAdminSettingsManager
+    public class SettingsManager : BaseManager, ISettingsManager
     {
         public SettingsManager(ApplicationDbContext context) : base(context)
         {
@@ -21,16 +21,6 @@ namespace DSL.Admin
         public async Task<AppSettings> GetSettings()
         {
             return await _context.Settings.OrderBy(s => s.Id).FirstAsync();
-        }
-        /// <summary>
-        /// Сохранение настроек.
-        /// </summary>
-        /// <param name="settings">Настройки.</param>
-        /// <returns></returns>
-        public async Task UpdateSettings(AppSettings settings)
-        {
-            _context.Update(settings);
-            await _context.SaveChangesAsync();
-        }
+        }        
     }
 }
