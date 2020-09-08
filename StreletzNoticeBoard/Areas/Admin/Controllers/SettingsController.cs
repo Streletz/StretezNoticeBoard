@@ -24,7 +24,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         // GET: SettingsController/Edit/
         public ActionResult Edit()
         {
-            return View(settingsManager.getSettings().Result);
+            return View(settingsManager.GetSettings().Result);
         }
 
         // POST: SettingsController1/Edit/5
@@ -34,9 +34,9 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         {
             try
             {
-                AppSettings settings = settingsManager.getSettings().Result;
+                AppSettings settings = settingsManager.GetSettings().Result;
                 settings.DescriptionLengthInList = newSettings.DescriptionLengthInList;
-                settingsManager.updateSettings(settings);
+                settingsManager.UpdateSettings(settings);
                 return RedirectToAction(nameof(Edit));
             }
             catch

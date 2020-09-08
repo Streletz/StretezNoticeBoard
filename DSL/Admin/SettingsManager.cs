@@ -18,7 +18,7 @@ namespace DSL.Admin
         /// Поиск актуальных настроек приложения..
         /// </summary>
         /// <returns>Настройки.</returns>
-        public async Task<AppSettings> getSettings()
+        public async Task<AppSettings> GetSettings()
         {
             return await _context.Settings.OrderBy(s => s.Id).FirstAsync();
         }
@@ -27,7 +27,7 @@ namespace DSL.Admin
         /// </summary>
         /// <param name="settings">Настройки.</param>
         /// <returns></returns>
-        public async Task updateSettings(AppSettings settings)
+        public async Task UpdateSettings(AppSettings settings)
         {
             _context.Update(settings);
             await _context.SaveChangesAsync();

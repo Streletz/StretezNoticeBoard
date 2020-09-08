@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Объявления";
+
 }
 
 <h2>Объявления</h2>
@@ -39,26 +40,35 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                <a asp-action="Details" asp-route-id="@item.Id">  @Html.DisplayFor(modelItem => item.Subject)</a>
-</td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsActive)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Редактировать</a> |                
-                <a asp-action="Delete" asp-route-id="@item.Id">Удалить</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">  @Html.DisplayFor(modelItem => item.Subject)</a>
+                </td>
+                <td>
+                    @if (item.Description.Length >= (int)ViewData["DescriptionLenght"])
+                    {
+                        <text> @item.Description.Substring(0, (int)ViewData["DescriptionLenght"]))</text>
+                    }
+                    else
+                    {
+                        <text> @item.Description</text>
+                    }
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedAt)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsActive)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Редактировать</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Удалить</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 <div class="row">
