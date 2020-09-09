@@ -19,7 +19,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
         private readonly CategoryAdminManager _categoryAdminManager;
         private readonly NoticesAdminManager _noticesAdminManager;
         private readonly UserAdminManager _userAdminManager;
-        private readonly SettingsManager settingsManager;
+        private readonly IAdminSettingsManager settingsManager;
 
         public NoticesController(
             ApplicationDbContext context,
@@ -212,6 +212,7 @@ namespace StreletzNoticeBoard.Areas.Admin.Controllers
             noticeList = await _noticesAdminManager.Search(search, page).ConfigureAwait(false);
             int noticesCount = noticeList.Count();
             ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
+            ViewData["DescriptionLenght"] = settingsManager.GetSettings().Result.DescriptionLengthInList;
             return View(noticeList);
         }
 

@@ -45,7 +45,14 @@
                 <a asp-action="Details" asp-route-id="@item.Id">  @Html.DisplayFor(modelItem => item.Subject)</a>
 </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Description)
+                @if (item.Description.Length >= (int)ViewData["DescriptionLenght"])
+                {
+                    <text> @item.Description.Substring(0, (int)ViewData["DescriptionLenght"]))</text>
+                }
+                else
+                {
+                    <text> @item.Description</text>
+                }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedAt)

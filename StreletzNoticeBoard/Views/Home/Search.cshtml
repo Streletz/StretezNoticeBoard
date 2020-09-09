@@ -41,6 +41,16 @@
                     <h4><a asp-controller="Notices" asp-action="Details" asp-route-id="@item.Id">@item.Subject</a></h4>
                     <p>@item.Category.CategoryName</p>
                     <p>@item.CreatedAt.ToString("dd.MM.yyyy HH:mm")</p>
+                    <p>
+                        @if (item.Description.Length >= (int)ViewData["DescriptionLenght"])
+                        {
+                            <text> @item.Description.Substring(0, (int)ViewData["DescriptionLenght"]))</text>
+                        }
+                        else
+                        {
+                            <text> @item.Description</text>
+                        }
+                    </p>
                 </div>
             </div>
         }

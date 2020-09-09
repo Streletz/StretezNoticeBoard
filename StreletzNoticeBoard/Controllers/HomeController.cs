@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using DataAccess.Data;
 using DataAccess.Data.Models;
+using DSL;
+using DSL.Site;
 using Microsoft.AspNetCore.Mvc;
 using StreletzNoticeBoard.Models;
 
@@ -16,10 +18,12 @@ namespace StreletzNoticeBoard.Controllers
     public class HomeController : Controller
     {
         private ApplicationDbContext _context;
+        private readonly ISettingsManager settingsManager;
 
         public HomeController(ApplicationDbContext context)
         {
             _context = context;
+            settingsManager = new SettingsManager(context);
         }
         public IActionResult Index(int page = 1)
         {
@@ -34,6 +38,7 @@ namespace StreletzNoticeBoard.Controllers
                 noticesList = _context.Notices.Where(x => x.IsActive).Skip((page - 1) * 20).Take(20).OrderByDescending(x => x.CreatedAt);
             }
             ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
+            ViewData["DescriptionLenght"] = settingsManager.GetSettings().Result.DescriptionLengthInList;
             return View(noticesList);
         }        
 
@@ -87,6 +92,7 @@ namespace StreletzNoticeBoard.Controllers
             }
             int noticesCount = noticesList.Count();
             ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
+            ViewData["DescriptionLenght"] = settingsManager.GetSettings().Result.DescriptionLengthInList;
             ViewData["Search"] = search;
             return View(noticesList);
         }

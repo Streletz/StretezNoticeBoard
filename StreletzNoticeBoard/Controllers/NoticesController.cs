@@ -10,22 +10,25 @@ using DataAccess.Data.Models;
 using StreletzNoticeBoard.Components.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using DSL.Site;
+using DSL;
 
 namespace StreletzNoticeBoard.Controllers
 {
     public class NoticesController : Controller
-    {        
+    {
         private UserManager<IdentityUser> _userManager;
         private readonly NoticesManager _noticesManager;
         private readonly CategoryManager _categoryManager;
         private readonly SiteUserManager _siteUserManager;
+        private readonly ISettingsManager settingsManager;
 
         public NoticesController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
-        {            
+        {
             _userManager = userManager;
             _noticesManager = new NoticesManager(context);
             _categoryManager = new CategoryManager(context);
             _siteUserManager = new SiteUserManager(context);
+            settingsManager = new SettingsManager(context);
         }
 
         // GET: Notices
@@ -36,10 +39,11 @@ namespace StreletzNoticeBoard.Controllers
             IEnumerable<Notice> noticesList;
             noticesList = await _noticesManager.FindByUser(page, user).ConfigureAwait(false);
             ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
+            ViewData["DescriptionLenght"] = settingsManager.GetSettings().Result.DescriptionLengthInList;
             return View(noticesList);
         }
 
-        
+
 
         // GET: Notices/Details/5
         public async Task<IActionResult> Details(Guid? id)
@@ -180,6 +184,7 @@ namespace StreletzNoticeBoard.Controllers
             IEnumerable<Notice> noticesList = _noticesManager.Search(searchString, page, user);
             int noticesCount = noticesList.Count();
             ViewData["PageCount"] = noticesCount <= 20 ? 1 : (noticesCount / 20) + 1;
+            ViewData["DescriptionLenght"] = settingsManager.GetSettings().Result.DescriptionLengthInList;
             ViewData["Search"] = searchString;
             return View(noticesList);
         }
